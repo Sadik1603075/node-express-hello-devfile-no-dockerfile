@@ -1,42 +1,40 @@
-
 const express = require("express");
-const app = express(); 
-const path = require('path');
-const os = require('os');
+const app = express();
+const path = require("path");
+const os = require("os");
 let cnt = 0;
 
 // static page serving
-app.use(express.static(path.join(__dirname, 'html')));
+app.use(express.static(path.join(__dirname, "html")));
 
-var PORT = process.env.PORT || 8080;
+var PORT = process.env.PORT || 3000;
 
-app.get("/", async(req,res,next) => {
-  res.render('index');
-})
+app.get("/", async (req, res, next) => {
+  res.render("index");
+});
 
-app.get("/hello", async(req, res) => {
-	try {
-		res.end(`Node Hello on ${os.hostname()}:${PORT} - ${cnt++} \n`);
-	} catch (err) {
-		console.error(err.message);
-	}  
-})
+app.get("/hello", async (req, res) => {
+  try {
+    res.end(`Node Hello on ${os.hostname()}:${PORT} - ${cnt++} \n`);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
-app.get("/environment", async(req, res) => {
-	try {
-		var env = process.env;
-		var results = "ENV\n";
-		Object.keys(env).forEach(function(key) {
-			results = results + key + ":" + env[key] + "\n";
-			console.log(key + ":" + env[key]);
-		});
-		res.end(results);	
-		
-	} catch (err) {
-		console.error(err.message);
-	}  
-})
+app.get("/environment", async (req, res) => {
+  try {
+    var env = process.env;
+    var results = "ENV\n";
+    Object.keys(env).forEach(function (key) {
+      results = results + key + ":" + env[key] + "\n";
+      console.log(key + ":" + env[key]);
+    });
+    res.end(results);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
 app.listen(PORT, function () {
-  console.log('my Node app listening on PORT ' + PORT + '!');
+  console.log("my Node app listening on PORT " + PORT + "!");
 });
