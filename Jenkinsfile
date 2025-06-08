@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "hello-node"
-        REGISTRY_URL = "localhost:5001"
+        REGISTRY_URL = "host.docker.internal:5001"
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         FULL_IMAGE = "${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
@@ -42,7 +42,7 @@ pipeline {
                         docker run -d --rm -p 8080:3000 --name app-container ${FULL_IMAGE}
                         sleep 5
                         curl -f http://localhost:8080 || (echo 'App did not respond' && exit 1)
-                        docker stop test-container
+                        docker stop app-container
                     """
                 }
             }
