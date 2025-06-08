@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "hello-node"
-        REGISTRY_URL = "host.docker.internal:5001"
+        REGISTRY_URL = "localhost:5001"
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         FULL_IMAGE = "${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
