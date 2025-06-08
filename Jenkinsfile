@@ -39,7 +39,7 @@ pipeline {
                     echo "Testing pulled image..."
                     sh """
                         docker pull ${FULL_IMAGE}
-                        docker run -d --rm -p 8081:8080 --name app-container ${FULL_IMAGE}
+                        docker run -d --rm -p 8081:3000 --name app-container ${FULL_IMAGE}
                         sleep 5
                         curl -f http://localhost:8081 || (echo 'App did not respond' && exit 1)
                         docker stop app-container
