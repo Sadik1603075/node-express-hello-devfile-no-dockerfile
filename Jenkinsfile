@@ -39,12 +39,13 @@ pipeline {
                     echo "Testing pulled image..."
                     sh """
                         docker pull ${FULL_IMAGE}
-                        if [ "$(docker ps -a -q -f name=app-container)" ]; then
-                          docker rm -f app-container
+                        if [ \$(docker ps -a -q -f name=app-container) ]; then
+                          docker stop app-container || true
+                          docker rm app-container
                         fi
                         docker run -d --rm -p 8081:3000 --name app-container ${FULL_IMAGE}
                         sleep 5
-                        curl -f http://localhost:8081 || (echo 'App did not respond' && exit 1)
+                        curl -f http://localhost:8081 || { echo 'App did not respond'; exit 1; }
                         docker stop app-container
                     """
                 }
