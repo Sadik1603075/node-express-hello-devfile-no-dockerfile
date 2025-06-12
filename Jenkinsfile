@@ -36,16 +36,18 @@ pipeline {
         stage('Pull & Run Image (Test)') {
             steps {
                 script {
-                    echo "Testing pulled image..."
-                    sh """
-                        docker pull ${FULL_IMAGE}
-                        if [ \$(docker ps -a -q -f name=app-container) ]; then
-                          docker stop app-container
-                          sleep 2
-                          docker rm -f app-container
-                        fi
-                        docker run -d --rm  -p 8081:3000 --name app-container ${FULL_IMAGE}
-                    """
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                        echo "Testing pulled image..."
+                        sh """
+                            docker pull ${FULL_IMAGE}
+                            if [ \$(docker ps -a -q -f name=app-container) ]; then
+                            docker stop app-container
+                            sleep 2
+                            docker rm -f app-container
+                            fi
+                            docker run -d --rm  -p 8081:3000 --name app-container ${FULL_IMAGE}
+                        """
+                    }
                 }
             }
         }
