@@ -28,6 +28,7 @@ docker run \
 3. Customize the official Jenkins Docker image, by executing the following two steps:
 
   a. Create a Dockerfile with the following content:
+  
     ```
         FROM jenkins/jenkins:2.504.2-jdk21
         USER root
@@ -52,16 +53,7 @@ docker run \
 4. Run your own `myjenkins-blueocean:2.504.2-1` image as a container in Docker using the following docker run command:
 
   ```
-    docker run \
-    --name jenkins-blueocean \
-    --restart=on-failure \
-    --detach \
-    --network jenkins \
-    --publish 8080:8080 \
-    --publish 50000:50000 \
-    --volume jenkins-data:/var/jenkins_home \
-    --volume jenkins-docker-certs:/certs/client:ro \
-    myjenkins-blueocean:2.504.2-1
+   docker run --name jenkins-blueocean --restart=on-failure --detach --network jenkins --publish 8080:8080 --publish 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock myjenkins-blueocean:2.504.2-1
   ```
 # Dockerfile
 
@@ -192,16 +184,18 @@ cat initialAdminPassword
 ```
 9. Created a pipeline from Jenkins web UI using forked git repository **URL** and targeting branch **main**.
 
+```
+  getent group docker
+  docker exec -u 0 -it jenkins-blueocean bash
+  groupadd -g 1001 docker (Note use the GID returned from: getent group docker)
+  usermod -aG docker jenkins
+  exit
+  docker restart jenkins-blueocean
+```
+
 10. Created a matching docker group inside the container using the following commands. Note: Need to match the group ID (GID) of the host's docker group inside the container so that the container's user (jenkins) can access the host's Docker socket (/var/run/docker.sock) with proper permissions.
 
-```
-getent group docker
-docker exec -u 0 -it jenkins-blueocean bash
-groupadd -g 1001 docker (Note use the GID returned from: getent group docker)
-usermod -aG docker jenkins
-exit
-docker restart jenkins-blueocean
-```
+
 
 # Docker Regsitry
 
@@ -217,3 +211,10 @@ docker run -d \
 
 # Issues 
 
+```
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
+
+```
+1. Jenkins container doesn't have permission to access Docker socket. Resolved this issue by point 10.
+
+2. Host Port 5000 is used by a process, that's why created a docker registry at port 5001.
