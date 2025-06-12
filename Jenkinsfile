@@ -1,14 +1,19 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "hello-node"
-        REGISTRY_URL = "localhost:5001"
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
-        FULL_IMAGE = "${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
-    }
-
     stages {
+        stage('Load Environment Variables') {
+            steps {
+                script {
+                    def props = readProperties file: 'env-production.properties'
+                    env.IMAGE_NAME = props.IMAGE_NAME
+                    env.REGISTRY_URL = props.REGISTRY_URL
+                    env.IMAGE_TAG = env.BUILD_NUMBER
+                    env.FULL_IMAGE = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                }
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/Sadik1603075/node-express-hello-devfile-no-dockerfile.git'
